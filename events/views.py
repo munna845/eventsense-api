@@ -6,7 +6,7 @@ from .serializers import user_serializer, Event_Serializer,Interest_serializer
 User = get_user_model()
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+class User_ViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = user_serializer
 #user view
@@ -14,13 +14,13 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         return User.objects.filter(id=self.request.user.id)
 
 # Interest View
-class InterestViewSet(viewsets.ModelViewSet):
+class Interest_ViewSet(viewsets.ModelViewSet):
     queryset = Interest.objects.all()
     serializer_class = Interest_serializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 # Event View
-class EventViewSet(viewsets.ModelViewSet):
+class Event_ViewSet(viewsets.ModelViewSet):
     serializer_class = Event_Serializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
