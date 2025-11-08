@@ -4,7 +4,7 @@ from .models import Event, Interest
 
 User = get_user_model()
 #user serializer
-class user_serializer(serializers.ModelSerializer):
+class User_serializer(serializers.ModelSerializer):
   Interest= serializers.StringRelatedField(many=True,read_only=True)
   
   class Meta:
@@ -20,9 +20,9 @@ class Interest_serializer(serializers.ModelSerializer):
 #Event serializer
 class Event_Serializer(serializers.ModelSerializer):
   Interest= serializers.StringRelatedField(many=True,read_only=True)
-  created_by = user_serializer(read_only=True)
+  created_by = User_serializer(read_only=True)
 
   class Meta:
     model=Event
-    fields=fields = ['id', 'title', 'description', 'location', 'date', 'interests', 'created_by', 'created_at']
+    fields= ['id', 'title', 'description', 'location', 'date', 'interests', 'created_by', 'created_at']
     

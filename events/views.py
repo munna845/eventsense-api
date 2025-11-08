@@ -1,33 +1,44 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions,filters
 from django.contrib.auth import get_user_model
 from .models import Event, Interest
-from .serializers import user_serializer, Event_Serializer,Interest_serializer
+from .serializers import User_serializer, Event_Serializer,Interest_serializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 
 User = get_user_model()
 
 
 class User_ViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Interest.objects.all().order_by('id')
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = user_serializer
-#user view
-    def get_queryset(self):
-        return User.objects.filter(id=self.request.user.id)
+    serializer_class = User_serializer
+
 
 # Interest View
 class Interest_ViewSet(viewsets.ModelViewSet):
-    queryset = Interest.objects.all()
+    queryset = Interest.objects.all().order_by('id') 
     serializer_class = Interest_serializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+    filter_backends = [DjangoFilterBackend,filters.OrderingFilter,filters.SearchFilter]
+    search_fields = ['name']
+    ordering_fields = ['name']
+    order = ['name']
+
+
 # Event View
 class Event_ViewSet(viewsets.ModelViewSet):
+    queryset = Event.objects.all()
     serializer_class = Event_Serializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    def get_queryset(self):
-        return Event.objects.all().order_by('-created_at')
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_fields = ['interests','interests','created_by']
+    searche_fields = ['title','description','location']
+    ordering_fields = ['title','date','created_at']
+    ordering = ['created_at']
+
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
