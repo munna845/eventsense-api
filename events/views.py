@@ -1,7 +1,7 @@
-from rest_framework import viewsets, permissions,filters
+from rest_framework import viewsets, permissions,filters,status
 from django.contrib.auth import get_user_model
-from .models import Event, Interest
-from .serializers import User_serializer, Event_Serializer,Interest_serializer
+from .models import Event,Interest
+from .serializers import User_serializer, Event_Serializer,Interest_serializer,Register_Serializer,Login_Serializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
@@ -13,6 +13,34 @@ class User_ViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Interest.objects.all().order_by('id')
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = User_serializer
+
+
+    @action(detail=False, methods=['post'])
+    def register(self,request):
+      serializer =Register_Serializer(data=request.data)
+      if serializer.is_valid:
+         user = serializer.save()
+         return Response({
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "phone": user.phone,
+                "interests": [i.name for i in user.interests.all()]
+            }, status=status.HTTP_201_CREATED)
+      return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    @action(detail=False,methods=['post'])
+
+    def login(self,request):
+      
+      serializer = Login_Serializer(data=request.data)
+      if serializer.is_valid:
+         user = serializer.validated_data
+         return Response({
+            'id':user.id,
+            'username':user.username,
+            'email':user.email
+         },status=status.HTTP_200_OK)
+      return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
 # Interest View
@@ -68,12 +96,3 @@ class Event_ViewSet(viewsets.ModelViewSet):
       serializer= self.get_serializer(events,many=True)
       return Response(serializer.data)
     
-    
-
-    
-
-
-
-
-
-

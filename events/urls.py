@@ -5,7 +5,8 @@ from .views import User_ViewSet, Event_ViewSet, Interest_ViewSet
 router = DefaultRouter()
 router.register(r'user', User_ViewSet, basename='user')
 router.register(r'events', Event_ViewSet, basename='events')
-router.register(r'interests', Interest_ViewSet)
+router.register(r'interests', Interest_ViewSet, basename='interesrs')
+
 
 urlpatterns = [
     path('', include(router.urls)),
