@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions,filters,status
 from django.contrib.auth import get_user_model
-from .models import Event,Interest
-from .serializers import User_serializer, Event_Serializer,Interest_serializer,Register_Serializer,Login_Serializer
+from .models import Event,Interest,Notification
+from .serializers import User_serializer, Event_Serializer,Interest_serializer,Register_Serializer,Login_Serializer,Notification_serializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
@@ -33,7 +33,7 @@ class User_ViewSet(viewsets.ReadOnlyModelViewSet):
     def login(self,request):
       
       serializer = Login_Serializer(data=request.data)
-      if serializer.is_valid:
+      if serializer.is_valid():
          user = serializer.validated_data
          return Response({
             'id':user.id,
@@ -96,3 +96,24 @@ class Event_ViewSet(viewsets.ModelViewSet):
       serializer= self.get_serializer(events,many=True)
       return Response(serializer.data)
     
+#notification viewdet
+class Notification_viewset(viewsets.ReadOnlyModelViewSet):
+  serializer_class=Notification_serializer
+  permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+  def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            return Notification.objects.filter(user=user).order_by('-created_at')
+        return Notification.objects.none()
+
+
+
+  @action(detail=True, methods=['post'])
+  def mark_as_read(self,request,pk=None):
+     notification = self.get_object()
+     notification.is_read = True
+     notification.save()
+     return Response({'status':'notification mark as read'})
+
+   
+  

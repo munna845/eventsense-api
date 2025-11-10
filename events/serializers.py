@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model,authenticate
-from .models import Event, Interest,Interest
+from .models import Event, Interest,Interest,Notification
 
 User = get_user_model()
 #user serializer
@@ -62,3 +62,9 @@ class Login_Serializer(serializers.ModelSerializer):
     if not user.is_active:
       raise serializers.ValidationError('this user is not active')
     return user
+  
+#Notification serializer
+class Notification_serializer(serializers.ModelSerializer):
+  class Meta:
+    model = Notification
+    fields =['user','messege','is_read','created_at']
