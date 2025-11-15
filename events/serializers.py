@@ -38,13 +38,13 @@ class Register_Serializer(serializers.ModelSerializer):
     fields = ['id','username','email','phone','password','interests']
   
 
-  def create(self,validate_data):
-    interests = validate_data.pop(interests,[])
+  def create(self,validated_data):
+    interests = validated_data.pop(interests,[])
     user =User.objects.create_user(
-      username=validate_data['username'],
-      email=validate_data['email',''],
-      password=validate_data['password'],
-      phone=validate_data['phone','']
+      username=validated_data['username'],
+      email=validated_data['email',''],
+      password=validated_data['password'],
+      phone=validated_data['phone','']
     )
     user.interests.set(interests)
     return user
